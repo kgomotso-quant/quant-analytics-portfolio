@@ -1,0 +1,67 @@
+Attribute VB_Name = "Module1"
+
+Sub SimpleInterestVBA()
+
+    Dim principalAmount As Double
+    Dim Rate As Double
+    Dim time As Double
+    Dim interest As Double
+    Dim futureValue As Double
+    Dim presentValue As Double
+    
+    Dim startDate As Date
+    Dim maturityDate As Date
+    Dim adjustedStartDate As Date
+    Dim adjustedMaturityDate As Date
+    
+    Dim ActualDays As Long
+    Dim currec As String
+
+    ' Read inputs
+    principalAmount = Range("C5").Value
+    Rate = Range("C6").Value / 100
+    startDate = Range("c7").Value
+    maturityDate = Range("c8").Value
+    currec = Range("c4").Value
+
+    ' Adjust dates
+    adjustedStartDate = AdjustToMonday(startDate)
+    adjustedMaturityDate = AdjustToMonday(maturityDate)
+
+    ' Day difference
+    ActualDays = adjustedMaturityDate - adjustedStartDate
+
+    ' Day count convention
+    If UCase(currec) = "ZAR" Then
+        time = ActualDays / 365
+    Else
+        time = ActualDays / 360
+    End If
+
+    ' Simple interest calculations
+    interest = principalAmount * Rate * time
+    futureValue = interest + principalAmount
+    presentValue = principalAmount
+
+    ' Export to Excel
+    Range("G6").Value = interest
+    Range("G4").Value = futureValue
+    Range("G9").Value = time
+    Range("G5").Value = presentValue
+    Range("G10").Value = ActualDays
+
+End Sub
+
+' Adjust date to Monday if weekend
+Function AdjustToMonday(d As Date) As Date
+
+    Select Case Weekday(d, vbMonday)
+        Case 6 ' Saturday
+            AdjustToMonday = d + 2
+        Case 7 ' Sunday
+            AdjustToMonday = d + 1
+        Case Else
+            AdjustToMonday = d
+    End Select
+
+End Function
